@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit {
       data: {
         "loginToken": "someToken",
         "deviceId": "someDeviceId"
-      }, width: '1100px', height: '700px'
+      }, width: '1100px', height: '650px'
     });
   }
 

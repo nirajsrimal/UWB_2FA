@@ -1,16 +1,40 @@
 <h1 mat-dialog-title>2 Factor Auth</h1>
-<div mat-dialog-content class="mat-typography">
-  <p>Please hold your phone upright and draw the pattern shown in the left</p>
-  <mat-grid-list cols="2">
-    <mat-grid-tile [colspan]="1">
-      <img src="https://cdn-skill.splashmath.com/panel-uploads/GlossaryTerm/db47621916224310993899234f9d0ab8/1564676778_perimeter-of-a-triangle-example.png"
-           alt="triangle" height="500" width="500"/>
-    </mat-grid-tile>
-    <mat-grid-tile [colspan]="1">
-      <plotly-plot [data]="graph.data" [layout]="graph.layout" *ngIf="graph !== undefined"></plotly-plot>
-    </mat-grid-tile>
-  </mat-grid-list>
+<div mat-dialog-content class="mat-typography" style="margin: auto">
+  <div *ngIf="selectedReceiver === undefined"
+       style="width: 100%; text-align: center; cursor: pointer"
+       (click)="attachReceiver()">
+
+    <mat-icon style="zoom: 15">sensors</mat-icon>
+    <br />
+    <b>Click here to connect a receiver!</b>
+  </div>
+  <div *ngIf="selectedReceiver !== undefined && targetPhoneFound === false && failedToFindPhone === false"
+       style="text-align: center; width: 100%">
+    <mat-spinner [diameter]="250" [strokeWidth]="2" style="margin: 0 auto"></mat-spinner>
+    <br />
+    <b>Searching for your phone...</b>
+  </div>
+  <div *ngIf="failedToFindPhone === true" style="text-align: center; width: 100%">
+    <mat-icon style="zoom: 10">no_cell</mat-icon>
+    <br />
+    <b>Failed to find registered device.<br/>Please keep the device on/close.</b> <br/><br/>
+    <button mat-button mat-stroked-button color="primary" style="margin-right: 10px" (click)="lookupDevice()">
+      Retry
+    </button>
+    <button mat-button mat-stroked-button color="warn" mat-dialog-close>Cancel</button>
+  </div>
+  <div *ngIf="targetPhoneFound === true" style="text-align: center">
+    <mat-grid-list cols="2">
+      <mat-grid-tile [colspan]="1">
+        <img src="https://cdn-skill.splashmath.com/panel-uploads/GlossaryTerm/db47621916224310993899234f9d0ab8/1564676778_perimeter-of-a-triangle-example.png"
+             alt="triangle" height="400" width="400"/>
+      </mat-grid-tile>
+      <mat-grid-tile [colspan]="1">
+        <plotly-plot [data]="graph.data" [layout]="graph.layout" *ngIf="graph !== undefined"></plotly-plot>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <button mat-button mat-stroked-button (click)="startRecording()" *ngIf="recording !== true">Start Recording</button>
+    <p *ngIf="recording === true">Please hold your phone upright and draw the pattern shown in the left</p>
+  </div>
+
 </div>
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancel</button>
-</mat-dialog-actions>
