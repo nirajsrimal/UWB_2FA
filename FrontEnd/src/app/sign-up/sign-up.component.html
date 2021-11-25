@@ -1,0 +1,84 @@
+<div class="content-holder">
+  <mat-card style="width: 50%;">
+    <mat-card-header style="justify-content: center">
+      <mat-card-title>
+        Sign Up
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="signup-form">
+
+      <h2>Your Details</h2>
+      <mat-form-field>
+        <input matInput placeholder="Name" />
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Username" />
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Password" type="password" />
+      </mat-form-field>
+
+      <h2 style="padding-top: 10px">Pair a device</h2>
+
+      <ul class="instr-list">
+        <li style="display: flex">
+          <mat-spinner [diameter]="20"
+                       [strokeWidth]="1"
+                       class="li-pad"
+                       *ngIf="selectedDevice === undefined"></mat-spinner>
+
+          <mat-icon style="color: green" *ngIf="selectedDevice !== undefined" class="li-pad">check</mat-icon>
+          <a href="javascript:void(0)" (click)="raiseRequest()" style="padding-right: 5px">Click here</a>
+          to discover receiver
+
+          <div *ngIf="selectedDevice !== undefined" style="padding-left: 10px; font-weight: bold">
+            Device Product ID: {{ productId }}, Vendor ID: {{ vendorId }}
+          </div>
+        </li>
+
+        <li style="display: flex" *ngIf="selectedDevice !== undefined">
+          <mat-spinner [diameter]="20"
+                       [strokeWidth]="1"
+                       class="li-pad"
+                       *ngIf="searchedPhones === false"></mat-spinner>
+
+          <mat-icon style="color: green" *ngIf="searchedPhones !== false" class="li-pad">check</mat-icon>
+          <a href="javascript:void(0)" (click)="scanPhones()" style="padding-right: 5px">Click here</a>
+          to discover phones
+
+          <div *ngIf="searchedPhones === true" style="padding-left: 10px; font-weight: bold">
+            Found: {{ phonesList.length }} phones.
+          </div>
+        </li>
+
+        <li style="display: flex" *ngIf="searchedPhones === true">
+
+          <mat-form-field>
+            <mat-label>Select Phone ID</mat-label>
+            <mat-select [(ngModel)]="selectedPhone">
+              <mat-option *ngFor="let phone of phonesList" [value]="phone">{{ phone }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+
+
+        </li>
+      </ul>
+
+      <div style="padding-top: 10px; text-align: center" >
+        <button mat-stroked-button mat-raised-button color="primary"
+                *ngIf="selectedDevice !== undefined && searchedPhones === true"
+                [disabled]="selectedPhone === undefined">
+          Submit
+        </button>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+  <div class="login-button">
+    Registered Already? <a href="/">Sign In.</a>
+  </div>
+
+</div>
+
+

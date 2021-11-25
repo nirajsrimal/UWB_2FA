@@ -1,0 +1,31 @@
+<div class="content-holder">
+  <mat-card style="width: 50%;">
+    <mat-card-header style="justify-content: center">
+      <mat-card-title>
+        Login
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="login-form">
+      <div style="text-align: center">
+        <p>Please enter your credentials</p>
+      </div>
+      <mat-form-field>
+        <input matInput placeholder="Username" />
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Password" type="password" />
+      </mat-form-field>
+
+      <div style="text-align: center">
+        <button mat-stroked-button mat-raised-button color="primary" style="width: fit-content" (click)="verify()">
+          Submit
+        </button>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+  <div class="sign-up-button">
+    Not registered? <a href="/signup">Sign Up.</a>
+  </div>
+
+</div>

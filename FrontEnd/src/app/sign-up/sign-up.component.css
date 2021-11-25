@@ -1,0 +1,24 @@
+.content-holder{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-button {
+  padding: 20px;
+}
+
+.li-pad {
+  padding-right: 10px;
+}
+
+.instr-list>li {
+  margin-top: 5px;
+}

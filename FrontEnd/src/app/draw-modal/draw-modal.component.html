@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>2 Factor Auth</h1>
+<div mat-dialog-content class="mat-typography">
+  <p>Please hold your phone upright and draw the pattern shown in the left</p>
+  <mat-grid-list cols="2">
+    <mat-grid-tile [colspan]="1">
+      <img src="https://cdn-skill.splashmath.com/panel-uploads/GlossaryTerm/db47621916224310993899234f9d0ab8/1564676778_perimeter-of-a-triangle-example.png"
+           alt="triangle" height="500" width="500"/>
+    </mat-grid-tile>
+    <mat-grid-tile [colspan]="1">
+      <plotly-plot [data]="graph.data" [layout]="graph.layout" *ngIf="graph !== undefined"></plotly-plot>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>

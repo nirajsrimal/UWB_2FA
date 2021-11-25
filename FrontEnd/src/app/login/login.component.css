@@ -1,0 +1,16 @@
+.content-holder{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.sign-up-button {
+  padding: 20px;
+}
