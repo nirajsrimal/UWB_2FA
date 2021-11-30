@@ -68,7 +68,9 @@ export class DrawModalComponent implements OnInit, OnDestroy {
       data: [
         { x: this.xData, y: this.yData, type: 'scatter', mode: 'lines+points', marker: {color: 'red'} }
       ],
-      layout: {width: 400, height: 400, title: 'Detected Motion'}
+      layout: {width: 400, height: 400, title: 'Detected Motion', bordercolor:'#000',
+        xaxis:{range: [-100, 100], fixedrange: true, showgrid:false, zeroline:false, visible:false, mirror: true},
+        yaxis:{range: [-100, 100], fixedrange: true, showgrid:false, zeroline:false, visible:false, mirror: true}}
     };
   }
 
@@ -136,7 +138,7 @@ export class DrawModalComponent implements OnInit, OnDestroy {
     // const lookFor = this.data.deviceId;
     const lookFor = "082261444D83CA1F";
 
-    const joinMessage = `ADDTAG ${lookFor} 1000 7 64 1`;
+    const joinMessage = `ADDTAG ${lookFor} 1000 1 64 1`;
     await this.deviceWriter.write(this.codec.encode(joinMessage));
     this.deviceWriter.releaseLock();
 
