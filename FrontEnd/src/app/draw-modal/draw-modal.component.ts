@@ -12,6 +12,8 @@ export class DrawModalComponent implements OnInit, OnDestroy {
   // Graph data
   xData: number[] = []
   yData: number[] = []
+  xs: number[] = []
+  ys: number[] = []
   graph: {data: any[], layout: any} | undefined = undefined;
 
   // Receiver members
@@ -56,12 +58,25 @@ export class DrawModalComponent implements OnInit, OnDestroy {
   }
 
   regenerateGraph(newX?:number, newY?:number) {
+    let window = 5;
     if (newX && newY) {
-      this.xData = [...this.xData];
-      this.yData = [...this.yData];
+      this.xs.push(newX)
+      this.ys.push(newY)
+      let data_len = this.xs.length;
+      if(data_len >= window) {
 
-      this.xData.push(newX);
-      this.yData.push(newY);
+        this.xs = this.xs.slice(Math.max(this.xs.length - 5, 0));
+        this.ys = this.ys.slice(Math.max(this.ys.length - 5, 0));
+
+        const sum_x = this.xs.reduce((prev, curr) => prev + curr, 0);
+        const sum_y= this.ys.reduce((prev, curr) => prev + curr, 0);
+
+        this.xData = [...this.xData];
+        this.yData = [...this.yData];
+
+        this.xData.push(sum_x / window);
+        this.yData.push(sum_y/ window);
+      }
     }
 
     this.graph = {
@@ -69,8 +84,8 @@ export class DrawModalComponent implements OnInit, OnDestroy {
         { x: this.xData, y: this.yData, type: 'scatter', mode: 'lines+points', marker: {color: 'red'} }
       ],
       layout: {width: 400, height: 400, title: 'Detected Motion', bordercolor:'#000',
-        xaxis:{range: [-100, 100], fixedrange: true, showgrid:false, zeroline:false, visible:false, mirror: true},
-        yaxis:{range: [-100, 100], fixedrange: true, showgrid:false, zeroline:false, visible:false, mirror: true}}
+        xaxis:{range: [-50, 150], fixedrange: true, showgrid:false, zeroline:false, visible:false, mirror: true},
+        yaxis:{range: [-50, 150], fixedrange: true, showgrid:false, zeroline:false, visible:false, mirror: true}}
     };
   }
 
@@ -138,7 +153,7 @@ export class DrawModalComponent implements OnInit, OnDestroy {
     // const lookFor = this.data.deviceId;
     const lookFor = "082261444D83CA1F";
 
-    const joinMessage = `ADDTAG ${lookFor} 1000 1 64 1`;
+    const joinMessage = `ADDTAG ${lookFor} 1000 4 64 1`;
     await this.deviceWriter.write(this.codec.encode(joinMessage));
     this.deviceWriter.releaseLock();
 
