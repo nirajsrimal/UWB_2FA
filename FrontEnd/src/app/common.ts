@@ -10,3 +10,9 @@ export class Codec {
     return this.decoder.decode(arr);
   }
 }
+
+export interface LoginResponse {
+  name: string;
+  tag_id: string;
+  token: string;
+}

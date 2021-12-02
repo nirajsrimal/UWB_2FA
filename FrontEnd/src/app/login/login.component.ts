@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
 import {DrawModalComponent} from "../draw-modal/draw-modal.component";
+import {HttpClient} from "@angular/common/http";
+import {LoginResponse} from "../common";
 
 @Component({
   selector: 'app-login',
@@ -9,25 +11,37 @@ import {DrawModalComponent} from "../draw-modal/draw-modal.component";
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private dialog: MatDialog) { }
+  username: string = '';
+  password: string = '';
+
+  constructor(private dialog: MatDialog, private http: HttpClient) { }
 
   ngOnInit(): void {
   }
 
   verify() {
-    // check Username, pass with backend
 
-    if (true) {
-      this.init2FA();
-    }
+    this.http.post<LoginResponse>('http://localhost:5000/login', {
+      'username': this.username,
+      'password': this.password
+    }).subscribe({
+      next: (resp: LoginResponse) => {
+        console.log("Success verification");
+        this.init2FA(resp['name'], resp['tag_id'], resp['token']);
+      },
+      error: (err) => {
+        console.log("Unsuccessful verification");
+      }
+    });
 
   }
 
-  init2FA() {
+  init2FA(name: string, tagId: string, token: string) {
     this.dialog.open(DrawModalComponent, {
       data: {
-        "loginToken": "someToken",
-        "deviceId": "someDeviceId"
+        "name": name,
+        "token": token,
+        "deviceId": tagId
       }, width: '1100px', height: '650px'
     });
   }

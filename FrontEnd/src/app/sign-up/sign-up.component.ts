@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Codec} from "../common";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-sign-up',
@@ -23,7 +24,11 @@ export class SignUpComponent implements OnInit {
 
   codec: Codec = new Codec();
 
-  constructor() { }
+  name: string = '';
+  username: string = '';
+  password: string = '';
+
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
     this.anyNavigator = navigator;
@@ -97,5 +102,21 @@ export class SignUpComponent implements OnInit {
         this.phonesList = JSON.parse(objString)["DList"];
       }
     }
+  }
+
+  signup() {
+    this.http.post('http://localhost:5000/signup', {
+      'username': this.username,
+      'password': this.password,
+      'name': this.name,
+      'tag_id': this.selectedPhone
+    }).subscribe({
+      next: (_) => {
+        console.log("Success signup");
+      },
+      error: (err) => {
+        console.log("Unsuccessful signup");
+      }
+    });
   }
 }

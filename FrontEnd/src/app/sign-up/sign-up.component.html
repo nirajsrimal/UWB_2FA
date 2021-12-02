@@ -9,13 +9,13 @@
 
       <h2>Your Details</h2>
       <mat-form-field>
-        <input matInput placeholder="Name" />
+        <input matInput placeholder="Name" [(ngModel)]="name"/>
       </mat-form-field>
       <mat-form-field>
-        <input matInput placeholder="Username" />
+        <input matInput placeholder="Username" [(ngModel)]="username"/>
       </mat-form-field>
       <mat-form-field>
-        <input matInput placeholder="Password" type="password" />
+        <input matInput placeholder="Password" type="password" [(ngModel)]="password"/>
       </mat-form-field>
 
       <h2 style="padding-top: 10px">Pair a device</h2>
@@ -65,7 +65,7 @@
       <div style="padding-top: 10px; text-align: center" >
         <button mat-stroked-button mat-raised-button color="primary"
                 *ngIf="selectedDevice !== undefined && searchedPhones === true"
-                [disabled]="selectedPhone === undefined">
+                [disabled]="selectedPhone === undefined" (click)="signup()">
           Submit
         </button>
       </div>

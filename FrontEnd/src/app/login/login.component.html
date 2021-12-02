@@ -10,10 +10,10 @@
         <p>Please enter your credentials</p>
       </div>
       <mat-form-field>
-        <input matInput placeholder="Username" />
+        <input matInput placeholder="Username" [(ngModel)]="username"/>
       </mat-form-field>
       <mat-form-field>
-        <input matInput placeholder="Password" type="password" />
+        <input matInput placeholder="Password" type="password" [(ngModel)]="password"/>
       </mat-form-field>
 
       <div style="text-align: center">

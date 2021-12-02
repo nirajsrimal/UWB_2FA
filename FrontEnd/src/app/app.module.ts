@@ -21,6 +21,7 @@ import {MatGridListModule} from "@angular/material/grid-list";
 
 import * as PlotlyJS from 'plotly.js-dist-min';
 import { PlotlyModule } from 'angular-plotly.js';
+import {HttpClientModule} from "@angular/common/http";
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
@@ -46,7 +47,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     FormsModule,
     MatDialogModule,
     MatGridListModule,
-    PlotlyModule
+    PlotlyModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [

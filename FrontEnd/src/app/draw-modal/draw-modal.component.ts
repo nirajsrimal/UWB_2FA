@@ -1,6 +1,7 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from "@angular/material/dialog";
 import {Codec} from "../common";
+import {webSocket} from "rxjs/webSocket";
 
 @Component({
   selector: 'app-draw-modal',
@@ -29,6 +30,10 @@ export class DrawModalComponent implements OnInit, OnDestroy {
   recording: boolean = false;
 
   codec: Codec = new Codec();
+
+  name: string = '';
+  token: string = '';
+  tokenVerified: boolean = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.regenerateGraph();
@@ -65,8 +70,8 @@ export class DrawModalComponent implements OnInit, OnDestroy {
       let data_len = this.xs.length;
       if(data_len >= window) {
 
-        this.xs = this.xs.slice(Math.max(this.xs.length - 5, 0));
-        this.ys = this.ys.slice(Math.max(this.ys.length - 5, 0));
+        this.xs = this.xs.slice(Math.max(this.xs.length - window, 0));
+        this.ys = this.ys.slice(Math.max(this.ys.length - window, 0));
 
         const sum_x = this.xs.reduce((prev, curr) => prev + curr, 0);
         const sum_y= this.ys.reduce((prev, curr) => prev + curr, 0);
@@ -75,7 +80,7 @@ export class DrawModalComponent implements OnInit, OnDestroy {
         this.yData = [...this.yData];
 
         this.xData.push(sum_x / window);
-        this.yData.push(sum_y/ window);
+        this.yData.push(sum_y  / window);
       }
     }
 
@@ -145,14 +150,17 @@ export class DrawModalComponent implements OnInit, OnDestroy {
     }
   }
 
+  connectWithToken() {
+
+  }
+
   async lookupDevice() {
     this.refresh();
+    this.name = this.data.name;
     this.targetPhoneFound = false;
     this.failedToFindPhone = false;
 
-    // const lookFor = this.data.deviceId;
-    const lookFor = "082261444D83CA1F";
-
+    const lookFor = this.data.deviceId;
     const joinMessage = `ADDTAG ${lookFor} 1000 4 64 1`;
     await this.deviceWriter.write(this.codec.encode(joinMessage));
     this.deviceWriter.releaseLock();
@@ -181,6 +189,8 @@ export class DrawModalComponent implements OnInit, OnDestroy {
       this.failedToFindPhone = true;
     } else {
       this.targetPhoneFound = true;
+      this.token = this.data.token;
+      this.connectWithToken();
     }
   }
 
