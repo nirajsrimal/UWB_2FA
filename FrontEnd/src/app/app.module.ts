@@ -22,6 +22,8 @@ import {MatGridListModule} from "@angular/material/grid-list";
 import * as PlotlyJS from 'plotly.js-dist-min';
 import { PlotlyModule } from 'angular-plotly.js';
 import {HttpClientModule} from "@angular/common/http";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import { SecretPageComponent } from './secret-page/secret-page.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
@@ -30,7 +32,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     AppComponent,
     LoginComponent,
     SignUpComponent,
-    DrawModalComponent
+    DrawModalComponent,
+    SecretPageComponent
   ],
   imports: [
     BrowserModule,
@@ -48,7 +51,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     MatDialogModule,
     MatGridListModule,
     PlotlyModule,
-    HttpClientModule
+    HttpClientModule,
+    MatSnackBarModule
   ],
   providers: [],
   bootstrap: [

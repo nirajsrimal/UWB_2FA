@@ -2,13 +2,14 @@ import hashlib
 import json
 import random
 import uuid
-
 import firebase_admin
 import time
 
 from flask import Flask, request, jsonify
-from flask_sockets import Sockets
+from flask_socketio import SocketIO, emit
 from firebase_admin import credentials, firestore
+
+from solver import get_shape
 
 # Initialize firebase
 cred = credentials.Certificate("./firebase-key.json")
@@ -20,9 +21,9 @@ attempt_collection = fs_client.collection('attempts')
 
 # Initialize flask
 app = Flask(__name__)
-sockets = Sockets(app)
+socket_io = SocketIO(app, cors_allowed_origins="*")
 
-available_patterns = ['rectangle', 'triangle', 'pentagon', 'circle']
+available_patterns = ['rectangle', 'triangle', 'pentagon', 'hexagon', 'circle']
 
 
 @app.after_request
@@ -31,14 +32,6 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
-
-
-@sockets.route('/echo')
-def echo_socket(ws):
-    while not ws.closed:
-        message = ws.receive()
-        print(message)
-        ws.send(message)
 
 
 @app.route('/signup', methods=['POST'])
@@ -72,7 +65,6 @@ def login():
             'message': 'Invalid User!'
         }), 401
 
-    print(matches[0].get('password'))
     if matches[0].get('password') != hashlib.sha256(req_body['password'].encode('utf-8')).hexdigest():
         return jsonify({
             'success': False,
@@ -91,23 +83,75 @@ def login():
         }), 401
 
     chosen_pattern = random.choice(available_patterns)
-    assigned_token = uuid.uuid4()
+    assigned_token = str(uuid.uuid4())
     attempt_collection.add({
         "username": req_body['username'],
         "pattern": chosen_pattern,
         "started_at": int(time.time() - 60),
-        "tag_id": matches[0]["tag_id"],
+        "tag_id": matches[0].get("tag_id"),
         "token": assigned_token
     })
 
     return jsonify({
         'success': True,
         'message': 'Successfully identified user, verify tag',
-        'tag_id': matches[0]['tag_id'],
-        'name': matches[0]['name'],
+        'tag_id': matches[0].get('tag_id'),
+        'name': matches[0].get('name'),
         'token': assigned_token
     })
 
 
+state = {
+    'inputs': [],
+    'pattern': None
+}
+
+
+@socket_io.on('token')
+def handle_token(token):
+    # print('Processing token: ' + str(token))
+    attempts = attempt_collection.where('token', '==', token).get()
+    if len(attempts) > 0:
+        state['pattern'] = attempts[0].get('pattern')
+        print("Expecting shape: " + str(state.get('pattern')))
+        emit('token_ack', state['pattern'])
+    else:
+        emit('token_na')
+
+
+@socket_io.on("data")
+def handle_data(data):
+    state['inputs'].append((data["ev_num"], data['x'], data['y']))
+    # print(state['inputs'])
+
+
+@socket_io.on("retry")
+def handle_retry():
+    print("Retry requested, clearing state")
+    state['inputs'] = []
+
+
+@socket_io.on("disconnect")
+def handle_disc():
+    print("Connection closed, clearing state")
+    state['inputs'] = []
+    state['pattern'] = None
+
+
+@socket_io.on("finalize")
+def compute_result():
+    print("Computing result")
+    computed_shape = get_shape(state['inputs'])
+    if computed_shape == state['pattern']:
+        print("Successful pattern!")
+        emit("computed_result", {'success': 'true', 'token': "success"})
+    else:
+        print("Expected {}, got {}".format(state['pattern'], computed_shape))
+        emit("computed_result", {'success': 'false'})
+
+    state['inputs'] = []
+    state['pattern'] = None
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    socket_io.run(app)

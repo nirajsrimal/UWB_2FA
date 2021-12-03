@@ -3,6 +3,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {DrawModalComponent} from "../draw-modal/draw-modal.component";
 import {HttpClient} from "@angular/common/http";
 import {LoginResponse} from "../common";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-login',
@@ -14,9 +15,10 @@ export class LoginComponent implements OnInit {
   username: string = '';
   password: string = '';
 
-  constructor(private dialog: MatDialog, private http: HttpClient) { }
+  constructor(private dialog: MatDialog, private http: HttpClient, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
+    localStorage.removeItem('token');
   }
 
   verify() {
@@ -26,11 +28,16 @@ export class LoginComponent implements OnInit {
       'password': this.password
     }).subscribe({
       next: (resp: LoginResponse) => {
-        console.log("Success verification");
+        this.snackBar.open("Successfully verified credentials. Initializing 2FA.", undefined,
+          {duration: 5000}
+        );
         this.init2FA(resp['name'], resp['tag_id'], resp['token']);
       },
       error: (err) => {
-        console.log("Unsuccessful verification");
+        this.snackBar.open("Could not verify credentials.", undefined,
+          {duration: 5000}
+        );
+        console.error("Unsuccessful verification", err);
       }
     });
 
@@ -42,7 +49,7 @@ export class LoginComponent implements OnInit {
         "name": name,
         "token": token,
         "deviceId": tagId
-      }, width: '1100px', height: '650px'
+      }, width: '500px', height: '600px'
     });
   }
 

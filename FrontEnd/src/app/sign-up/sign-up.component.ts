@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Codec} from "../common";
 import {HttpClient} from "@angular/common/http";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-sign-up',
@@ -28,7 +29,7 @@ export class SignUpComponent implements OnInit {
   username: string = '';
   password: string = '';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.anyNavigator = navigator;
@@ -112,10 +113,15 @@ export class SignUpComponent implements OnInit {
       'tag_id': this.selectedPhone
     }).subscribe({
       next: (_) => {
-        console.log("Success signup");
+        this.snackBar.open("Successfully signed up. Please present this device at login!",
+          undefined, {duration: 3000}
+        );
       },
       error: (err) => {
-        console.log("Unsuccessful signup");
+        this.snackBar.open("Failed to signup. Please use a unique username.", undefined,
+          {duration: 5000}
+        );
+        console.error("Unsuccessful signup", err);
       }
     });
   }

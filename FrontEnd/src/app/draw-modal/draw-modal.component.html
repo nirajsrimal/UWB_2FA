@@ -24,18 +24,24 @@
     <button mat-button mat-stroked-button color="warn" mat-dialog-close>Cancel</button>
   </div>
   <div *ngIf="targetPhoneFound === true" style="text-align: center">
-    <div *ngIf="tokenVerified">
-      <mat-grid-list cols="2">
-        <mat-grid-tile [colspan]="1">
-          <img src="https://cdn-skill.splashmath.com/panel-uploads/GlossaryTerm/db47621916224310993899234f9d0ab8/1564676778_perimeter-of-a-triangle-example.png"
-               alt="triangle" height="400" width="400"/>
-        </mat-grid-tile>
-        <mat-grid-tile [colspan]="1">
-          <plotly-plot [data]="graph.data" [layout]="graph.layout" *ngIf="graph !== undefined"></plotly-plot>
-        </mat-grid-tile>
-      </mat-grid-list>
+    <div *ngIf="tokenVerified" style="text-align: center">
+<!--      <mat-grid-list cols="2">-->
+      <p *ngIf="recording === true">Please hold your phone upright and draw a {{shape}}</p>
+<!--        <mat-grid-tile [colspan]="1">-->
+<!--          {{shape}}-->
+<!--        </mat-grid-tile>-->
+<!--        <mat-grid-tile [colspan]="1">-->
+      <div style="text-align: center">
+        <plotly-plot [data]="graph.data" [layout]="graph.layout" *ngIf="graph !== undefined"></plotly-plot>
+      </div>
+
+<!--        </mat-grid-tile>-->
+<!--      </mat-grid-list>-->
       <button mat-button mat-stroked-button (click)="startRecording()" *ngIf="recording !== true">Start Recording</button>
-      <p *ngIf="recording === true">Please hold your phone upright and draw the pattern shown in the left</p>
+      <button mat-button mat-stroked-button (click)="retry()" *ngIf="recording === true">Retry</button>
+      <button mat-button mat-stroked-button color="primary" (click)="finalize()" *ngIf="recording === true">
+        Finish
+      </button>
     </div>
     <div *ngIf="!tokenVerified">
       Establishing connection...
