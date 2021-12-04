@@ -16,9 +16,8 @@ corner_shapes_map = {
 
 model_prediction_map = {
     0: "triangle",
-    1: "star",
-    2: "square",
-    3: "circle"
+    1: "rectangle",
+    2: "circle"
 }
 
 
@@ -38,7 +37,7 @@ def get_shape_from_model(canvas):
     m_input = cv2.resize(canvas, (60, 60))
     m_input = m_input.astype('float32')
     print(m_input.shape)
-    m_input /= 255
+    # m_input /= 255
     m_input = m_input.reshape(np.prod([60, 60]))
 
     pred_list = model.predict(m_input.reshape(1, np.prod([60, 60])))[0].tolist()

@@ -6,10 +6,11 @@
 
 
 import cv2, numpy as np, os
+
+from tensorflow import keras
+from tensorflow.keras import layers
+
 from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Dropout
 
 # parameters
 img_size = 60  # size of image fed into model
@@ -25,13 +26,11 @@ def flatten(dimData, images):
 
 # -------------get train/test data-----------------
 # get data
-folders, labels, images = ['triangle', 'star', 'square', 'circle'], [], []
+folders, labels, images = ['triangle', 'rectangle', 'circle'], [], []
 for folder in folders:
     print(folder)
-    for path in os.listdir(os.path.join(os.getcwd(), "Kaggle/shapes", folder)):
-        img = cv2.imread(os.path.join(os.getcwd(), "Kaggle/shapes", folder, path), 0)
-        # cv2.imshow('img', img)
-        # cv2.waitKey(1)
+    for path in os.listdir(os.path.join(os.getcwd(), "gen", folder)):
+        img = cv2.imread(os.path.join(os.getcwd(), "gen", folder, path), 0)
         images.append(cv2.resize(img, (img_size, img_size)))
         labels.append(folders.index(folder))
 
@@ -53,8 +52,8 @@ for image, label in zip(images, labels):
 
 # flatten data
 dataDim = np.prod(images[0].shape)
-train_data = flatten(dataDim, train_images)
-test_data = flatten(dataDim, test_images)
+# train_data = flatten(dataDim, train_images)
+# test_data = flatten(dataDim, test_images)
 
 # change labels to categorical
 train_labels = np.array(train_labels)
@@ -69,21 +68,29 @@ nClasses = len(classes)
 # three layers
 # activation function: both
 # neurons: 256
-model = Sequential()
-model.add(Dense(256, activation='tanh', input_shape=(dataDim,)))
-model.add(Dropout(0.2))
-model.add(Dense(256, activation='tanh'))
-model.add(Dropout(0.2))
-model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(nClasses, activation='softmax'))
+model = keras.Sequential(
+    [
+        keras.Input(shape=(60, 60, 1)),
+        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Flatten(),
+        layers.Dropout(0.5),
+        layers.Dense(3, activation="softmax"),
+    ]
+)
+
+
+train_images_np = np.array(train_images, dtype=np.uint8)
+test_images_np = np.array(test_images, dtype=np.uint8)
 
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
-history = model.fit(train_data, train_labels_one_hot, batch_size=256, epochs=50, verbose=1,
-                    validation_data=(test_data, test_labels_one_hot))
+history = model.fit(train_images_np, train_labels_one_hot, batch_size=256, epochs=50, verbose=1,
+                    validation_data=(test_images_np, test_labels_one_hot))
 
 # test model
-[test_loss, test_acc] = model.evaluate(test_data, test_labels_one_hot)
+[test_loss, test_acc] = model.evaluate(test_images_np, test_labels_one_hot)
 print("Evaluation result on Test Data : Loss = {}, accuracy = {}".format(test_loss, test_acc))
 # save model
 model.save('model.h5')
