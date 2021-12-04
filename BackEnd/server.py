@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 import random
 import uuid
 import firebase_admin
@@ -23,7 +24,14 @@ attempt_collection = fs_client.collection('attempts')
 app = Flask(__name__)
 socket_io = SocketIO(app, cors_allowed_origins="*")
 
-available_patterns = ['rectangle', 'triangle', 'pentagon', 'hexagon', 'circle']
+mode = os.environ.get('MODE', 'OPENCV')
+print("Starting server with {} backend".format(mode))
+
+if mode == 'OPENCV':
+    available_patterns = ['rectangle', 'triangle', 'pentagon', 'hexagon', 'circle']
+else:
+    # available_patterns = ['square', 'triangle', 'circle']
+    available_patterns = ['circle']
 
 
 @app.after_request
@@ -109,7 +117,6 @@ state = {
 
 @socket_io.on('token')
 def handle_token(token):
-    # print('Processing token: ' + str(token))
     attempts = attempt_collection.where('token', '==', token).get()
     if len(attempts) > 0:
         state['pattern'] = attempts[0].get('pattern')
@@ -141,7 +148,7 @@ def handle_disc():
 @socket_io.on("finalize")
 def compute_result():
     print("Computing result")
-    computed_shape = get_shape(state['inputs'])
+    computed_shape = get_shape(state['inputs'], use_ml=(mode != 'OPENCV'))
     if computed_shape == state['pattern']:
         print("Successful pattern!")
         emit("computed_result", {'success': 'true', 'token': "success"})
