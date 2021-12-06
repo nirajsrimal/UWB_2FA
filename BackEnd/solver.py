@@ -26,7 +26,7 @@ def get_corners_in_canvas(canvas):
     final_contours = imutils.grab_contours(detected_contours)
 
     peri = cv2.arcLength(final_contours[0], True)
-    approx = cv2.approxPolyDP(final_contours[0], 0.04 * peri, True)
+    approx = cv2.approxPolyDP(final_contours[0], 0.1 * peri, True)
     return len(approx)
 
 
@@ -58,8 +58,11 @@ def get_shape(arr, use_ml=False):
     contours[:, 0] += 50
 
     # Create a canvas and fill it up for a thresh img
-    canvas = np.full((200, 200), 255, dtype=np.uint8)
-    cv2.fillPoly(canvas, pts=np.int32([contours]), color=0)
+    # canvas = np.full((200, 200), 255, dtype=np.uint8)
+    # cv2.fillPoly(canvas, pts=np.int32([contours]), color=0)
+
+    canvas = np.full((200, 200), 0, dtype=np.uint8)
+    cv2.fillPoly(canvas, pts=np.int32([contours]), color=255)
 
     if use_ml:
         return get_shape_from_model(canvas)

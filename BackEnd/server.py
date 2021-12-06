@@ -28,7 +28,8 @@ mode = os.environ.get('MODE', 'OPENCV')
 print("Starting server with {} backend".format(mode))
 
 if mode == 'OPENCV':
-    available_patterns = ['rectangle', 'triangle', 'pentagon', 'hexagon', 'circle']
+    # available_patterns = ['rectangle', 'triangle', 'pentagon', 'hexagon', 'circle']
+    available_patterns = ['rectangle', 'triangle']
 else:
     # available_patterns = ['square', 'triangle', 'circle']
     available_patterns = ['circle']
